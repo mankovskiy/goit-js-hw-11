@@ -7,7 +7,7 @@ body {
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: hwb(0 66% 34% / 0.827);
+  background-color: rgb(208, 213, 221);
   color: #212121;
   line-height: 1.5;
 }
@@ -19,26 +19,22 @@ body {
   margin-bottom: 16px;
 }
 
-.country-info {
-  display: inline-block;
+.hide {
+  visibility: hidden;
 }
-.country-list {
-  list-style: none;
+img {
+  display: block;
+  width: 150px;
+  height: 150px;
+  margin-right: 15px;
+  box-shadow: 10px 10px 8px 2px rgba(0, 0, 0, 0.3);
 }
-.list-info {
-  list-style: none;
-  padding-left: 0;
-  text-align: center;
+.link {
+  text-decoration: none;
 }
-.img-info {
-  display: inline-block;
-  text-align: center;
-  width: 300px;
-}
-.title {
-  text-align: center;
-}
-
-.img-item {
-  width: 100px;
+.gallery {
+  padding-top: 50px;
+  display: block;
+  display: flex;
+  flex-wrap: wrap;
 }
