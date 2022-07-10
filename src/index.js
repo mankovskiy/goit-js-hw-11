@@ -21,7 +21,7 @@ let inputValue = '';
 button.addEventListener('submit', onFormSubmit);
 loadMoreButton.addEventListener('click', onLoadMoreButton);
 
-function onFormSubmit(e) {
+async function onFormSubmit(e) {
   e.preventDefault();
   clearMarkup();
 
@@ -31,27 +31,26 @@ function onFormSubmit(e) {
     Notify.info('"Please make an inquiry"');
     return;
   }
-  return fetchPhoto(inputValue)
-    .then(response => {
-      if (response.hits.length !== 0) {
-        console.log(response.hits);
+  try {
+    const response = await fetchPhoto(inputValue);
+    if (response.hits.length !== 0) {
+      console.log(response.hits);
 
-        Notify.success(`We found ${response.totalHits}images`);
-        const createMarkup = response.hits.map(createCardsMarkup).join('');
-        cards.insertAdjacentHTML('beforeend', createMarkup);
-        loadMoreButton.classList.remove('hide');
-        lightbox.refresh();
-      } else {
-        Notify.failure(
-          '"Sorry, there are no images matching your search query. Please try again."'
-        );
-      }
+      Notify.success(`We found ${response.totalHits}images`);
 
-      clearInput();
-    })
-    .catch(Error => {
-      console.log(Error);
-    });
+      const createMarkup = response.hits.map(createCardsMarkup).join('');
+      cards.insertAdjacentHTML('beforeend', createMarkup);
+      loadMoreButton.classList.remove('hide');
+      lightbox.refresh();
+    } else {
+      Notify.failure(
+        '"Sorry, there are no images matching your search query. Please try again."'
+      );
+    }
+    clearInput();
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // function createMarkup(params) {}
@@ -94,11 +93,12 @@ function createCardsMarkup({
     </div>`;
 }
 
-function onLoadMoreButton() {
+async function onLoadMoreButton(inputValue) {
   // loadMoreButton.classList.add('hide');
 
   // response.totalHits;
-  return fetchPhoto(inputValue).then(response => {
+  const response = await fetchPhoto(inputValue);
+  try {
     let totalPages = `${response.totalHits}` / 40;
 
     console.log(totalPages);
@@ -119,7 +119,7 @@ function onLoadMoreButton() {
       loadMoreButton.classList.remove('hide');
       lightbox.refresh();
     }
-
-    // loadMoreButton.classList.remove('hide');
-  });
+  } catch (error) {}
+  console.log(error);
+  // loadMoreButton.classList.remove('hide');
 }
