@@ -1,6 +1,6 @@
 import 'modern-normalize';
 import { fetchPhoto, DEFAULT_PAGE } from './fetchPhoto';
-import { DEFAULT_PAGE } from './fetchPhoto';
+import { DEFAULT_PAGE, DEFAULT_PERPAGE } from './fetchPhoto';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
@@ -33,12 +33,12 @@ async function onFormSubmit(e) {
   }
   try {
     const response = await fetchPhoto(inputValue);
-    if (response.hits.length !== 0) {
-      console.log(response.hits);
+    if (response.data.hits.length !== 0) {
+      console.log(response.data.hits);
 
-      Notify.success(`We found ${response.totalHits}images`);
+      Notify.success(`We found ${response.data.totalHits}images`);
 
-      const createMarkup = response.hits.map(createCardsMarkup).join('');
+      const createMarkup = response.data.hits.map(createCardsMarkup).join('');
       cards.insertAdjacentHTML('beforeend', createMarkup);
       loadMoreButton.classList.remove('hide');
       lightbox.refresh();
@@ -52,8 +52,6 @@ async function onFormSubmit(e) {
     console.log(error);
   }
 }
-
-// function createMarkup(params) {}
 
 function clearMarkup() {
   cards.innerHTML = '';
@@ -93,33 +91,32 @@ function createCardsMarkup({
     </div>`;
 }
 
-async function onLoadMoreButton(inputValue) {
-  // loadMoreButton.classList.add('hide');
-
-  // response.totalHits;
-  const response = await fetchPhoto(inputValue);
+async function onLoadMoreButton() {
   try {
-    let totalPages = `${response.totalHits}` / 40;
+    const response = await fetchPhoto(inputValue);
 
+    let totalPages = `${response.data.totalHits}` / DEFAULT_PERPAGE;
     console.log(totalPages);
-    console.log(DEFAULT_PAGE);
 
     if (DEFAULT_PAGE > totalPages) {
       Notify.failure(
         "We're sorry, but you've reached the end of search results."
       );
 
-      const createMarkup = response.hits.map(createCardsMarkup).join('');
+      console.log(totalPages);
+      console.log(DEFAULT_PAGE);
+
+      const createMarkup = response.data.hits.map(createCardsMarkup).join('');
       cards.insertAdjacentHTML('beforeend', createMarkup);
       loadMoreButton.classList.add('hide');
     }
     if (DEFAULT_PAGE < totalPages) {
-      const createMarkup = response.hits.map(createCardsMarkup).join('');
+      const createMarkup = response.data.hits.map(createCardsMarkup).join('');
       cards.insertAdjacentHTML('beforeend', createMarkup);
       loadMoreButton.classList.remove('hide');
       lightbox.refresh();
     }
-  } catch (error) {}
-  console.log(error);
-  // loadMoreButton.classList.remove('hide');
+  } catch (error) {
+    console.log(error);
+  }
 }
