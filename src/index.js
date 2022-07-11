@@ -1,5 +1,5 @@
 import 'modern-normalize';
-import { fetchPhoto, DEFAULT_PAGE } from './fetchPhoto';
+import { fetchPhoto, DEFAULT_PAGE, resetPage } from './fetchPhoto';
 import { DEFAULT_PAGE, DEFAULT_PERPAGE } from './fetchPhoto';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
@@ -23,11 +23,13 @@ loadMoreButton.addEventListener('click', onLoadMoreButton);
 
 async function onFormSubmit(e) {
   e.preventDefault();
+  loadMoreButton.classList.remove('hide');
   clearMarkup();
-
   inputValue = form.elements.searchQuery.value.trim();
+  resetPage();
+
   console.log(inputValue);
-  if (!inputValue) {
+  if (inputValue === '') {
     Notify.info('"Please make an inquiry"');
     return;
   }
@@ -40,12 +42,13 @@ async function onFormSubmit(e) {
 
       const createMarkup = response.data.hits.map(createCardsMarkup).join('');
       cards.insertAdjacentHTML('beforeend', createMarkup);
-      loadMoreButton.classList.remove('hide');
+      loadMoreButton.classList.add('hide');
       lightbox.refresh();
     } else {
       Notify.failure(
         '"Sorry, there are no images matching your search query. Please try again."'
       );
+      loadMoreButton.classList.remove('hide');
     }
     clearInput();
   } catch (error) {
@@ -92,30 +95,35 @@ function createCardsMarkup({
 }
 
 async function onLoadMoreButton() {
+  // loadMoreButton.classList.remove('hide');
+
+  // loadMoreButton.classList.add('hide');
   try {
     const response = await fetchPhoto(inputValue);
 
     let totalPages = `${response.data.totalHits}` / DEFAULT_PERPAGE;
     console.log(totalPages);
 
-    if (DEFAULT_PAGE > totalPages) {
-      Notify.failure(
-        "We're sorry, but you've reached the end of search results."
-      );
-
-      console.log(totalPages);
-      console.log(DEFAULT_PAGE);
-
-      const createMarkup = response.data.hits.map(createCardsMarkup).join('');
-      cards.insertAdjacentHTML('beforeend', createMarkup);
-      loadMoreButton.classList.add('hide');
-    }
+    // if (DEFAULT_PAGE > totalPages) {
     if (DEFAULT_PAGE < totalPages) {
       const createMarkup = response.data.hits.map(createCardsMarkup).join('');
       cards.insertAdjacentHTML('beforeend', createMarkup);
-      loadMoreButton.classList.remove('hide');
+      loadMoreButton.classList.add('hide');
       lightbox.refresh();
     }
+    if (DEFAULT_PAGE > totalPages || inputValue === '') {
+      Notify.failure(
+        "We're sorry, but you've reached the end of search results."
+      );
+      loadMoreButton.classList.remove('hide');
+    }
+
+    // console.log(totalPages);
+    // console.log(DEFAULT_PAGE);
+
+    // const createMarkup = response.data.hits.map(createCardsMarkup).join('');
+    // cards.insertAdjacentHTML('beforeend', createMarkup);
+    // loadMoreButton.classList.add('hide');
   } catch (error) {
     console.log(error);
   }

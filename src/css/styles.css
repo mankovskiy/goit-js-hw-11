@@ -25,9 +25,6 @@ button {
   margin-bottom: 16px;
 }
 
-.hide {
-  visibility: hidden;
-}
 img {
   display: block;
   width: 150px;
@@ -63,4 +60,8 @@ input {
   margin: 20px auto;
   display: block;
   text-align: center;
+  visibility: hidden;
+}
+.hide {
+  visibility: visible;
 }

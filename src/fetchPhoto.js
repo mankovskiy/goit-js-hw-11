@@ -13,6 +13,10 @@ async function fetchPhoto(inputValue) {
   console.log(response.data.totalHits);
   return response;
 }
+function resetPage() {
+  return (DEFAULT_PAGE = 1);
+}
 
 export { fetchPhoto };
 export { DEFAULT_PAGE, DEFAULT_PERPAGE };
+export { resetPage };
